@@ -1,20 +1,70 @@
 pipeline {
     agent any
+
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                echo 'Stage 1: Building application...'
+                echo 'Забираем код из GitHub...'
+                checkout scm
             }
         }
-        stage('Test') {
+
+        stage('Check Files') {
             steps {
-                echo 'Stage 2: Running automated tests...'
+                echo 'Проверяем созданные файлы...'
+                sh '''
+                    echo "=== FILES ==="
+                    ls -la
+
+                    if [ -f Dockerfile ]; then
+                        echo "Dockerfile найден"
+                    else
+                        echo "Dockerfile НЕ найден"
+                    fi
+
+                    if [ -f requirements.txt ]; then
+                        echo "requirements.txt найден"
+                    else
+                        echo "requirements.txt НЕ найден"
+                    fi
+
+                    if [ -d src ]; then
+                        echo "Папка src найдена"
+                        if [ -f src/app.py ]; then
+                            echo "Файл src/app.py найден"
+                        else
+                            echo "Файл src/app.py НЕ найден"
+                        fi
+                    else
+                        echo "Папка src НЕ найдена"
+                    fi
+
+                    if [ -f .dockerignore ]; then
+                        echo ".dockerignore найден"
+                    else
+                        echo ".dockerignore НЕ найден"
+                    fi
+                '''
             }
         }
-        stage('Deploy') {
+
+        stage('Docker Theory') {
             steps {
-                echo 'Stage 3: Deploying to staging...'
+                echo 'ТЕОРИЯ DOCKER'
+                echo 'docker build -t my-app .'
+                echo 'docker run -d -p 8081:5000 my-app'
+                echo 'curl http://localhost:8081/health'
             }
         }
     }
+
+    post {
+        success {
+            echo 'SUCCESS: CI/CD пайплайн орындалды!'
+        }
+        failure {
+            echo 'FAIL: Қате шықты, бірақ бұл да тәжірибе.'
+        }
+    }
 }
+
