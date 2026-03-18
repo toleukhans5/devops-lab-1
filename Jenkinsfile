@@ -13,38 +13,38 @@ pipeline {
         stage('Check Files') {
             steps {
                 echo 'Проверяем созданные файлы...'
-                bat '''
-                    echo === FILES IN REPO ===
-                    dir
+                sh '''
+                    echo "=== FILES IN REPO ==="
+                    ls -la
 
-                    IF EXIST Dockerfile (
-                        echo Dockerfile найден
-                    ) ELSE (
-                        echo Dockerfile НЕ найден
-                    )
+                    if [ -f Dockerfile ]; then
+                        echo "Dockerfile найден"
+                    else
+                        echo "Dockerfile НЕ найден"
+                    fi
 
-                    IF EXIST requirements.txt (
-                        echo requirements.txt найден
-                    ) ELSE (
-                        echo requirements.txt НЕ найден
-                    )
+                    if [ -f requirements.txt ]; then
+                        echo "requirements.txt найден"
+                    else
+                        echo "requirements.txt НЕ найден"
+                    fi
 
-                    IF EXIST src (
-                        echo Папка src найдена
-                        IF EXIST src\\app.py (
-                            echo Файл src\\app.py найден
-                        ) ELSE (
-                            echo Файл src\\app.py НЕ найден
-                        )
-                    ) ELSE (
-                        echo Папка src НЕ найдена
-                    )
+                    if [ -d src ]; then
+                        echo "Папка src найдена"
+                        if [ -f src/app.py ]; then
+                            echo "Файл src/app.py найден"
+                        else
+                            echo "Файл src/app.py НЕ найден"
+                        fi
+                    else
+                        echo "Папка src НЕ найдена"
+                    fi
 
-                    IF EXIST .dockerignore (
-                        echo .dockerignore найден
-                    ) ELSE (
-                        echo .dockerignore НЕ найден
-                    )
+                    if [ -f .dockerignore ]; then
+                        echo ".dockerignore найден"
+                    else
+                        echo ".dockerignore НЕ найден"
+                    fi
                 '''
             }
         }
